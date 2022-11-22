@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: TBA Category Image Widget Plugin
+Plugin Name: TBA Image by Category Widget Plugin
 Plugin URI: https://toolboxaid.com/create-widget-plugin-wordpress/
 Description: This plugin adds a custom category image widget.
 Version: 1.1
@@ -157,7 +157,8 @@ class TBA_Category_Image_Widget extends WP_Widget {
 $nnn="ToolBoxAid";			
 echo "<p>";
 #try{
-if ($categories[0]->category_parent !== null) {
+#if ($categories[0]->category_parent !== null) {
+if ( (! empty( $categories )) && $categories[0]->category_parent !== null) {
 
 	$parent = $categories[0]->category_parent;
 
@@ -181,8 +182,183 @@ if ($categories[0]->category_parent !== null) {
 
 echo "$nnn";
 echo "</p>";
+#------------------------------------------------------------------------------------
+/*
+                        echo "<p> post id: ";
+
+			$post = get_post();
+			echo $post->ID;
+                        echo "</p>";
+
+
+            global $wp;
+
+			echo "<p> req: ";
+			echo "$wp->request";
+			echo "</p>";
+
+			// Since slugs itself can't contain slashes,
+			// let's explode on slashes and get just the last portion.
+			$request_args = explode('/', $wp->request);
+			$current_slug = end($request_args);
+			echo "<p> args: ";
+			echo "$request_args[0]";
+			echo "</p>";
+			echo "<p> slug: ";
+			echo "$current_slug";
+			echo "</p>";
+
+			$categories = wp_get_post_categories($post->ID);
+
+			$category= '';
+			foreach($categories as $childcat) {
+#				get_categories_parent_id ($childcat);
+                $this_category = get_category($childcat);
+				echo "<p>$childcat";
+
+#				cur_cat_id = get_query_var($childcat);
+#				echo "$cur_cat_id";
+
+#				$findme = $this_category-ID;
+#                echo " - ";
+#                echo "$findme";
+
+				echo " - ";
+				$findme=$this_category->name;
+				$lookin=$wp->request;
+#				$pos = stripos($mystring1, $findme);
+                echo "find: $findme ";
+#				echo "$pos";
+                echo "</p>";
+#				$parentcat = $childcat->category_parent;
+#				if($parentcat>0){
+#					$category = get_cat_name($parentcat);
+#					continue;
+#				 }
+			}
+
+#$catid=74;
+# while ($catid) {
+#  $cat = get_category($catid); // get the object for the catid
+#  $catid = $cat->category_parent; // assign parent ID (if exists) to $catid
+#  $catParent = $cat->cat_ID;
+# }
+#echo $catParent;
+
+$findme    = 'c';
+$mystring1 = 'xyz';
+$mystring2 = 'ABC';
+
+$pos1 = stripos($mystring1, $findme);
+$pos2 = stripos($mystring2, $findme);
+// Nope, 'a' is certainly not in 'xyz'
+if ($pos1 === false) {
+    echo "<p>The string '$findme' was not found in the string '$mystring1'</p>";
+}
+
+// Note our use of ===.  Simply == would not work as expected
+// because the position of 'a' is the 0th (first) character.
+if ($pos2 !== false) {
+    echo "<p>We found '$findme' in '$mystring2' at position $pos2</p>";
+}
+
+
+
+/*
+
+1512
+11 – Health
+12 – Nutrition
+req: blog-category/nutrition
+args: blog-category
+slug: nutrition
+
+https://toolboxaid.com/blog-category/nutrition/
+
+11 – Health
+req: blog-category/health
+args: blog-category
+slug: health
+
+677
+11 – Health
+req: health/booty-cream
+args: health
+slug: booty-cream
+
+665
+2 – Career
+15 – Personal
+req: blog-category/personal
+args: blog-category
+slug: personal
+
+665
+2 – Career
+15 – Personal
+req: career/best-career-advice
+args: career
+slug: best-career-advice
+ 
+381
+15 – Personal
+req: personal/8-simple-rules
+args: personal
+slug: 8-simple-rules 
+ 
+665
+2 – Career
+15 – Personal
+req: blog-category/personal
+args: blog-category
+slug: personal
+
+ 
+ 
+ */
+
+#$string = 'The lazy fox jumped over the fence';
+#
+#if (str_contains($string, 'lazy')) {
+#    echo "The string 'lazy' was found in the string\n";
+#}
+#
+#if (str_contains($string, 'Lazy')) {
+#    echo 'The string "Lazy" was found in the string';
+#} else {
+#    echo '"Lazy" was not found because the case does not match';
+#}			
+
+
+#			foreach(wp_get_post_categories($post->ID) as $childcat) {
+#			   	$parentcat = get_category($childcat);;  
+#				echo get_cat_name($parentcat);
+#				echo $parentcat->term_id;
+#			}   
+#	        echo $post->post_parent->cat_ID; 
+
+
+#			foreach ( get_categories() as $category ) :
+#			     echo $category->name;
+#			endforeach;			
+
+#            try{
+#                $category = (strlen($category)>0)? $category :  $categories[0]->cat_name;
+#            } catch (Exception $e) {
+#                $category = "Other";
+#            }
+
+			//============================================
+	$htmlpath = '/wp-content/uploads/category/' .esc_html( strtolower($nnn )) . '.png';
+#            $htmlpath = '/wp-content/uploads/category/' .esc_html( strtolower($category )) . '.png';
 			$filepath = $_SERVER['DOCUMENT_ROOT'] . $htmlpath;
 
+#			if (file_exists($filepath)) {
+#			   echo "The file $filepath exists";
+#			} else {
+#			   echo "The file $filepath does not exist";
+#			}
+			
 			if ( (! empty( $categories )) && file_exists($filepath) ) {
 			    echo '<img width="345" height="225" src="';
 			    echo $htmlpath;
