@@ -15,7 +15,7 @@ class TBA_Category_Image_Widget extends WP_Widget {
 	// Main constructor
 	public function __construct() {
 		parent::__construct(
-			'category_image_widget',
+			'tba_category_image_widget',
 			__( 'TBA Category Image Widget', 'text_domain' ),
 			array(
 				'customize_selective_refresh' => true,
@@ -85,7 +85,6 @@ class TBA_Category_Image_Widget extends WP_Widget {
 
 	<?php }
 
-
 	function get_categories_parent_id ($catid) {
 	 while ($catid) {
 		$cat = get_category($catid); // get the object for the catid
@@ -120,13 +119,11 @@ class TBA_Category_Image_Widget extends WP_Widget {
 
 		$categories = get_the_category();
 
-
-
 		// WordPress core before_widget hook (always include )
 		echo $before_widget;
 
 		// Display the widget
-		echo '<div class="widget-text wp_widget_plugin_box category_image_widget">';
+		echo '<div class="widget-text wp_widget_plugin_box tba_category_image_widget">';
 
 			// Display widget title if defined
 			if ( $title ) {
@@ -153,8 +150,7 @@ class TBA_Category_Image_Widget extends WP_Widget {
 				echo '<p>Something awesome</p>';
 			}
 
-
-			$nnn="ToolBoxAid";			
+			$my_cat="ToolBoxAid";			
 			echo "<p>";
 			if ( (! empty( $categories )) && $categories[0]->category_parent !== null) {
 
@@ -162,25 +158,24 @@ class TBA_Category_Image_Widget extends WP_Widget {
 
 				if (!empty($parent)) {
 
-					$nnn=get_cat_name($parent );
+					$my_cat=get_cat_name($parent );
 				} else {
 
 					$parent=$categories[0]->cat_name;
-					$nnn=$parent;
+					$my_cat=$parent;
 				}
 			}
 			
-			echo "$nnn";
+			echo "$my_cat";
 			echo "</p>";
 
-         	$htmlpath = '/wp-content/uploads/category/' .esc_html( strtolower($nnn )) . '.png';
+         	$htmlpath = '/wp-content/uploads/category/' .esc_html( strtolower($my_cat )) . '.png';
 			$filepath = $_SERVER['DOCUMENT_ROOT'] . $htmlpath;
 
 			if ( (! empty( $categories )) && file_exists($filepath) ) {
 			    echo '<img width="345" height="225" src="';
 			    echo $htmlpath;
 			    echo '" alt="Parent Category: ' . $category . '">';
-
 			    echo '<p>Parent Category: ';
 				echo '<a href ="/category/' . $category . '">';
 			    echo $category;
@@ -188,7 +183,6 @@ class TBA_Category_Image_Widget extends WP_Widget {
 			} else {
 				echo '<img width="345" height="225" src="/wp-content/uploads/category/TBA.png" alt="Toolbox Aid">';
 			}
-
 
 		echo '</div>';
 
@@ -199,7 +193,7 @@ class TBA_Category_Image_Widget extends WP_Widget {
 }
 
 // Register the widget
-function my_register_custom_widget() {
+function register_tba_category_image_widget() {
 	register_widget( 'TBA_Category_Image_Widget' );
 }
-add_action( 'widgets_init', 'my_register_custom_widget' );
+add_action( 'widgets_init', 'register_tba_category_image_widget' );
