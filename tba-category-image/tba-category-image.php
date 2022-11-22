@@ -154,33 +154,26 @@ class TBA_Category_Image_Widget extends WP_Widget {
 			}
 
 
-$nnn="ToolBoxAid";			
-echo "<p>";
-#try{
-if ($categories[0]->category_parent !== null) {
+			$nnn="ToolBoxAid";			
+			echo "<p>";
+			if ( (! empty( $categories )) && $categories[0]->category_parent !== null) {
 
-	$parent = $categories[0]->category_parent;
+				$parent = $categories[0]->category_parent;
 
-#}catch(Exception $e){
-#    $nnn="abc";
-#}
+				if (!empty($parent)) {
 
-    if (!empty($parent)) {
-#    	echo "parent:";
-#    	echo $parent;
-    	$nnn=get_cat_name($parent );
-    } else {
-#    	echo "cat_name:";
-    #	echo $categories[0]->cat_name;
-    	$parent=$categories[0]->cat_name;
-#    	echo $parent;
-    	$nnn=$parent;
-    }
-}
-#echo " - N: ";
+					$nnn=get_cat_name($parent );
+				} else {
 
-echo "$nnn";
-echo "</p>";
+					$parent=$categories[0]->cat_name;
+					$nnn=$parent;
+				}
+			}
+			
+			echo "$nnn";
+			echo "</p>";
+
+         	$htmlpath = '/wp-content/uploads/category/' .esc_html( strtolower($nnn )) . '.png';
 			$filepath = $_SERVER['DOCUMENT_ROOT'] . $htmlpath;
 
 			if ( (! empty( $categories )) && file_exists($filepath) ) {
