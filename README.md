@@ -2,10 +2,10 @@
 Plug-ins written by TBA for sites we support
 
 === TBA Category Image ===
-Contributors: Mr. Q
-Requires at least: 3.0.1
-Tested up to: 6.1.1
-Stable tag: trunk
+- Contributors: Mr. Q
+- Requires Wordpress : 6.0.0 or higher
+- Tested up to: 6.1.1
+- Stable tag: trunk
 
 == Description ==
 This plugin displays an image of the current post/page for the parent category.  A default image
@@ -20,7 +20,7 @@ This section describes how to install the plugin and get it working.
 e.g.
 
 1. Upload `TBA-category-image.zip` to the your site
-2. Activate the plugin through the 'Plugins' menu in WordPress
+2. Activate the plugin through the 'Plugins' menu
 3. Configure the default values through the settings page.
 4. Add the plugin to a page or side bar
 5. enjoy
