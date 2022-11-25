@@ -30,17 +30,15 @@ class TBA_Category_Image_Widget extends WP_Widget {
 		$defaults = array(
 			'title'    => '',
 			'text'     => '',
-			'textarea' => '',
-			'checkbox' => '',
-			'select'   => '',
+			'showImagePath' => false,
 		);
 		
 		// Parse current settings with defaults
 		extract( wp_parse_args( ( array ) $instance, $defaults ) ); ?>
 
-		<?php // Widget Title ?>
+		<?php // Title ?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php _e( 'Widget Title', 'text_domain' ); ?></label>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php _e( 'Title', 'text_domain' ); ?></label>
 			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
 		</p>
 
@@ -50,39 +48,13 @@ class TBA_Category_Image_Widget extends WP_Widget {
 			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'text' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'text' ) ); ?>" type="text" value="<?php echo esc_attr( $text ); ?>" />
 		</p>
 
-		<?php // Textarea Field ?>
+		<?php // showImagePath ?>
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'textarea' ) ); ?>"><?php _e( 'Textarea:', 'text_domain' ); ?></label>
-			<textarea class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'textarea' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'textarea' ) ); ?>"><?php echo wp_kses_post( $textarea ); ?></textarea>
-		</p>
-
-		<?php // Checkbox ?>
-		<p>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'checkbox' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'checkbox' ) ); ?>" type="checkbox" value="1" <?php checked( '1', $checkbox ); ?> />
-			<label for="<?php echo esc_attr( $this->get_field_id( 'checkbox' ) ); ?>"><?php _e( 'Checkbox', 'text_domain' ); ?></label>
+			<input id="<?php echo esc_attr( $this->get_field_id( 'showImagePath' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'showImagePath' ) ); ?>" type="checkbox" value="1" <?php checked( '1', $showImagePath ); ?> />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'showImagePath' ) ); ?>"><?php _e( 'Show Image Path', 'text_domain' ); ?></label>
 		</p>
 
 		<?php // Dropdown ?>
-		<p>
-			<label for="<?php echo $this->get_field_id( 'select' ); ?>"><?php _e( 'Select', 'text_domain' ); ?></label>
-			<select name="<?php echo $this->get_field_name( 'select' ); ?>" id="<?php echo $this->get_field_id( 'select' ); ?>" class="widefat">
-			<?php
-			// Your options array
-			$options = array(
-				''        => __( 'Select', 'text_domain' ),
-				'option_1' => __( 'Option 1', 'text_domain' ),
-				'option_2' => __( 'Option 2', 'text_domain' ),
-				'option_3' => __( 'Option 3', 'text_domain' ),
-			);
-
-			// Loop through options and add each one to the select dropdown
-			foreach ( $options as $key => $name ) {
-				echo '<option value="' . esc_attr( $key ) . '" id="' . esc_attr( $key ) . '" '. selected( $select, $key, false ) . '>'. $name . '</option>';
-
-			} ?>
-			</select>
-		</p>
-
 	<?php }
 
 	function get_categories_parent_id ($catid) {
@@ -96,12 +68,12 @@ class TBA_Category_Image_Widget extends WP_Widget {
 
 	// Update widget settings
 	public function update( $new_instance, $old_instance ) {
+
+
 		$instance = $old_instance;
-		$instance['title']    = isset( $new_instance['title'] ) ? wp_strip_all_tags( $new_instance['title'] ) : '';
-		$instance['text']     = isset( $new_instance['text'] ) ? wp_strip_all_tags( $new_instance['text'] ) : '';
-		$instance['textarea'] = isset( $new_instance['textarea'] ) ? wp_kses_post( $new_instance['textarea'] ) : '';
-		$instance['checkbox'] = isset( $new_instance['checkbox'] ) ? 1 : false;
-		$instance['select']   = isset( $new_instance['select'] ) ? wp_strip_all_tags( $new_instance['select'] ) : '';
+		$instance['title']    = isset( $new_instance['title'] )    ? wp_strip_all_tags( $new_instance['title'] ) : '';
+		$instance['text']     = isset( $new_instance['text'] )     ? wp_strip_all_tags( $new_instance['text'] ) : '';
+		$instance['showImagePath'] = isset( $new_instance['showImagePath'] ) ? wp_strip_all_tags( $new_instance['showImagePath'] ) : false;
 		return $instance;
 	}
 
@@ -111,11 +83,9 @@ class TBA_Category_Image_Widget extends WP_Widget {
 		extract( $args );
 
 		// Check the widget options
-		$title    = isset( $instance['title'] ) ? apply_filters( 'widget_title', $instance['title'] ) : '';
-		$text     = isset( $instance['text'] ) ? $instance['text'] : '';
-		$textarea = isset( $instance['textarea'] ) ?$instance['textarea'] : '';
-		$select   = isset( $instance['select'] ) ? $instance['select'] : '';
-		$checkbox = ! empty( $instance['checkbox'] ) ? $instance['checkbox'] : false;
+		$title    = isset( $instance['title']    ) ? apply_filters( 'widget_title', $instance['title'] ) : '';
+		$text     = isset( $instance['text']     ) ? $instance['text'] : '';
+        $showImagePath = isset( $instance['showImagePath'] ) ? $instance['showImagePath'] : false;
 
 		$categories = get_the_category();
 
@@ -133,21 +103,6 @@ class TBA_Category_Image_Widget extends WP_Widget {
 			// Display text field
 			if ( $text ) {
 				echo '<p>' . $text . '</p>';
-			}
-
-			// Display textarea field
-			if ( $textarea ) {
-				echo '<p>' . $textarea . '</p>';
-			}
-
-			// Display select field
-			if ( $select ) {
-				echo '<p>' . $select . '</p>';
-			}
-
-			// Display something if checkbox is true
-			if ( $checkbox ) {
-				echo '<p>Something awesome</p>';
 			}
 
 			$my_cat="ToolBoxAid";			
@@ -181,8 +136,15 @@ class TBA_Category_Image_Widget extends WP_Widget {
 			    echo $my_cat;
                 echo '</a></p>';
 			} else {
-				echo '<img width="345" height="225" src="/wp-content/uploads/category/TBA.png" alt="Toolbox Aid">';
+	            $htmlpath = '/wp-content/uploads/category/TBA.png';
+		        $filepath = $_SERVER['DOCUMENT_ROOT'] . $htmlpath;
+				echo '<img width="345" height="225" src="' . $htmlpath .'" alt="Toolbox Aid">';
 			}
+
+            if ( $showImagePath ) {
+                echo '<p>' . $filepath . '</p>';
+            }
+
 
 		echo '</div>';
 
