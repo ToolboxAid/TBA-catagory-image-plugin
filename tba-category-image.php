@@ -166,7 +166,7 @@ class TBA_Category_Image_Widget extends WP_Widget {
 				}
 			}
 			
-			echo "$my_cat";
+//			echo "$my_cat";
 			echo "</p>";
 
          	$htmlpath = '/wp-content/uploads/category/' .esc_html( strtolower($my_cat )) . '.png';
@@ -175,10 +175,10 @@ class TBA_Category_Image_Widget extends WP_Widget {
 			if ( (! empty( $categories )) && file_exists($filepath) ) {
 			    echo '<img width="345" height="225" src="';
 			    echo $htmlpath;
-			    echo '" alt="Parent Category: ' . $category . '">';
-			    echo '<p>Parent Category: ';
-				echo '<a href ="/category/' . $category . '">';
-			    echo $category;
+			    echo '" alt="Parent Category: ' . $my_cat . '">';
+			    echo '<p>&nbsp;&nbsp;Parent Category: ';
+				echo '<a href ="/category/' . $my_cat . '">';
+			    echo $my_cat;
                 echo '</a></p>';
 			} else {
 				echo '<img width="345" height="225" src="/wp-content/uploads/category/TBA.png" alt="Toolbox Aid">';
