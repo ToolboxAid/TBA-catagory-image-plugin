@@ -67,13 +67,9 @@ class tba_category_image extends WP_Widget {
 		// before and after widget arguments are defined by themes
 		echo $args['before_widget'];
 
-		if ( ! empty( $title ) )
+		if ( ! empty( $title ) ){
 			echo $args['before_title'] . $title . $args['after_title'];
-
-        if ( ! empty( $defaultImage ) )
-            echo '<p>' . $defaultImage . '</p>';
-
-		$filePath = '';
+		}
 
 		//======================================================
         $categories = get_the_category();
@@ -90,13 +86,19 @@ class tba_category_image extends WP_Widget {
             }
         }
 
-        $htmlpath = '/wp-content/uploads/category/' .esc_html( strtolower($my_cat )) . '.png';
+        $htmlpath = '/wp-content/uploads/category/' . esc_html( strtolower($my_cat )) . '.png';
         $filepath = $_SERVER['DOCUMENT_ROOT'] . $htmlpath;
 
 		if ( (! empty( $categories )) && file_exists($filepath) ) {
 			// all is good
-        } else {
-            $htmlpath = '/wp-content/uploads/category/TBA.png';
+		} else {
+	        if ( ! empty( $defaultImage ) ){
+				//echo '<p>' . $defaultImage . '</p>';
+	            $htmlpath = '/wp-content/uploads/category/' . $defaultImage . '.png';
+			} else {
+				$htmlpath = '/wp-content/uploads/category/TBA.png';
+			}
+
             $filepath = $_SERVER['DOCUMENT_ROOT'] . $htmlpath;
 		}
 
@@ -111,7 +113,7 @@ class tba_category_image extends WP_Widget {
 		//=====================================================
 
         if (  ! empty( $debugPath ) && $debugPath == 'true' ) {
-			echo '<p> Image Path: ';
+			echo '<p>&nbsp;&nbsp;Image Path: ';
             echo $filepath . '</p>';
 		}
 
