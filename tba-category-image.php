@@ -1,161 +1,141 @@
 <?php
 /*
-Plugin Name: TBA Category Image Widget Plugin
+Plugin Name: TBA Category Image Widget
 Plugin URI: https://toolboxaid.com/create-widget-plugin-wordpress/
 Description: This plugin adds a custom category image widget.
 Version: 1.1
-Author: David Quesenberry
-Author URI: http://www.wpexplorer.com/create-widget-plugin-wordpress/
+Author: Mr Q
+Author URI: http://toolboxaid.com/
 License: GPL2
 */
 
 // The widget class
-class TBA_Category_Image_Widget extends WP_Widget {
-
-	// Main constructor
-	public function __construct() {
+// Creating the widget
+class tba_category_image extends WP_Widget {
+ 
+	function __construct() {
 		parent::__construct(
-			'tba_category_image_widget',
-			__( 'TBA Category Image Widget', 'text_domain' ),
-			array(
-				'customize_selective_refresh' => true,
-			)
-		);
+	 
+			'tba_category_image',                                         // Base ID of your widget
+			__('TBA Category Image Widget', 'tba_category_image_domain'), // Widget name will appear in UI
+		 
+			// Widget description
+			array( 'description' => __( 'This Toolbox Aid widget will display an image for a category', 'tba_category_image_domain' ), )
+			);
 	}
 
-	// The widget form (for the backend )
+    // ------------------------------------------------------------------------------------------------------------------------------------
+    // Widget Backend
 	public function form( $instance ) {
 
-		// Set widget defaults
-		$defaults = array(
-			'title'    => '',
-			'text'     => '',
-			'showImagePath' => false,
-		);
+       // Set widget defaults
+        $defaults = array(
+            'title'         => 'Toolbox Aid',
+            'defaultImage'  => 'TBA',
+            'debugPath'     => true,
+        );
+
+        // Parse current settings with defaults
+        extract( wp_parse_args( ( array ) $instance, $defaults ) ); ?>
 		
-		// Parse current settings with defaults
-		extract( wp_parse_args( ( array ) $instance, $defaults ) ); ?>
+		<?phpi // Widget Title ?>        
+        <p>
+            <label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php _e( 'Title', 'text_domain' ); ?></label>
+            <input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
+        </p>
 
-		<?php // Title ?>
+        <p>
+            <label for="<?php echo esc_attr( $this->get_field_id( 'defaultImage' ) ); ?>"><?php _e( 'Default Image', 'text_domain' ); ?></label>
+            <input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'defaultImage' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'defaultImage' ) ); ?>" type="text" value="<?php echo esc_attr( $defaultImage ); ?>" />
+        </p>
+
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php _e( 'Title', 'text_domain' ); ?></label>
-			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
+			 <input class="checkbox" type="checkbox" <?php checked( $instance[ 'debugPath' ], 'on' ); ?> id="<?php echo $this->get_field_id( 'debugPath' ); ?>" name="<?php echo $this->get_field_name( 'debugPath' ); ?>" /> 
+		     <label for="<?php echo $this->get_field_id( 'debugPath' ); ?>">Show Image Path</label>
 		</p>
 
-		<?php // Text Field ?>
-		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'text' ) ); ?>"><?php _e( 'Text:', 'text_domain' ); ?></label>
-			<input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'text' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'text' ) ); ?>" type="text" value="<?php echo esc_attr( $text ); ?>" />
-		</p>
+        <?php
+    }
 
-		<?php // showImagePath ?>
-		<p>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'showImagePath' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'showImagePath' ) ); ?>" type="checkbox" value="1" <?php checked( '1', $showImagePath ); ?> />
-			<label for="<?php echo esc_attr( $this->get_field_id( 'showImagePath' ) ); ?>"><?php _e( 'Show Image Path', 'text_domain' ); ?></label>
-		</p>
-
-		<?php // Dropdown ?>
-	<?php }
-
-	function get_categories_parent_id ($catid) {
-	 while ($catid) {
-		$cat = get_category($catid); // get the object for the catid
-		$catid = $cat->category_parent; // assign parent ID (if exists) to $catid
-		$catParent = $cat->cat_ID;
-		}
-	  echo $catParent;
-	}
-
-	// Update widget settings
-	public function update( $new_instance, $old_instance ) {
-
-
-		$instance = $old_instance;
-		$instance['title']    = isset( $new_instance['title'] )    ? wp_strip_all_tags( $new_instance['title'] ) : '';
-		$instance['text']     = isset( $new_instance['text'] )     ? wp_strip_all_tags( $new_instance['text'] ) : '';
-		$instance['showImagePath'] = isset( $new_instance['showImagePath'] ) ? wp_strip_all_tags( $new_instance['showImagePath'] ) : false;
-		return $instance;
-	}
-
-	// Display the widget
+	// ------------------------------------------------------------------------------------------------------------------------------------	 
+	// Creating widget front-end
 	public function widget( $args, $instance ) {
+		$title        = apply_filters( 'widget_title', $instance['title'] );
+        $defaultImage = apply_filters( 'defaultImage', $instance['defaultImage'] );
+		$debugPath    = $instance[ 'debugPath' ] ? 'true' : 'false';
+	
+		// before and after widget arguments are defined by themes
+		echo $args['before_widget'];
 
-		extract( $args );
+		if ( ! empty( $title ) )
+			echo $args['before_title'] . $title . $args['after_title'];
 
-		// Check the widget options
-		$title    = isset( $instance['title']    ) ? apply_filters( 'widget_title', $instance['title'] ) : '';
-		$text     = isset( $instance['text']     ) ? $instance['text'] : '';
-        $showImagePath = isset( $instance['showImagePath'] ) ? $instance['showImagePath'] : false;
+        if ( ! empty( $defaultImage ) )
+            echo '<p>' . $defaultImage . '</p>';
 
-		$categories = get_the_category();
+		$filePath = '';
 
-		// WordPress core before_widget hook (always include )
-		echo $before_widget;
+		//======================================================
+        $categories = get_the_category();
+        $my_cat="";
+        if ( (! empty( $categories )) && $categories[0]->category_parent !== null) {
 
-		// Display the widget
-		echo '<div class="widget-text wp_widget_plugin_box tba_category_image_widget">';
+            $parent = $categories[0]->category_parent;
 
-			// Display widget title if defined
-			if ( $title ) {
-				echo $before_title . $title . $after_title;
-			}
-
-			// Display text field
-			if ( $text ) {
-				echo '<p>' . $text . '</p>';
-			}
-
-			$my_cat="ToolBoxAid";			
-			echo "<p>";
-			if ( (! empty( $categories )) && $categories[0]->category_parent !== null) {
-
-				$parent = $categories[0]->category_parent;
-
-				if (!empty($parent)) {
-
-					$my_cat=get_cat_name($parent );
-				} else {
-
-					$parent=$categories[0]->cat_name;
-					$my_cat=$parent;
-				}
-			}
-			
-//			echo "$my_cat";
-			echo "</p>";
-
-         	$htmlpath = '/wp-content/uploads/category/' .esc_html( strtolower($my_cat )) . '.png';
-			$filepath = $_SERVER['DOCUMENT_ROOT'] . $htmlpath;
-
-			if ( (! empty( $categories )) && file_exists($filepath) ) {
-			    echo '<img width="345" height="225" src="';
-			    echo $htmlpath;
-			    echo '" alt="Parent Category: ' . $my_cat . '">';
-			    echo '<p>&nbsp;&nbsp;Parent Category: ';
-				echo '<a href ="/category/' . $my_cat . '">';
-			    echo $my_cat;
-                echo '</a></p>';
-			} else {
-	            $htmlpath = '/wp-content/uploads/category/TBA.png';
-		        $filepath = $_SERVER['DOCUMENT_ROOT'] . $htmlpath;
-				echo '<img width="345" height="225" src="' . $htmlpath .'" alt="Toolbox Aid">';
-			}
-
-            if ( $showImagePath ) {
-                echo '<p>' . $filepath . '</p>';
+            if (!empty($parent)) {
+                $my_cat=get_cat_name($parent );
+            } else {
+                $parent=$categories[0]->cat_name;
+                $my_cat=$parent;
             }
+        }
 
+        $htmlpath = '/wp-content/uploads/category/' .esc_html( strtolower($my_cat )) . '.png';
+        $filepath = $_SERVER['DOCUMENT_ROOT'] . $htmlpath;
 
-		echo '</div>';
+		if ( (! empty( $categories )) && file_exists($filepath) ) {
+			// all is good
+        } else {
+            $htmlpath = '/wp-content/uploads/category/TBA.png';
+            $filepath = $_SERVER['DOCUMENT_ROOT'] . $htmlpath;
+		}
 
-		// WordPress core after_widget hook (always include )
-		echo $after_widget;
+        echo '<img width="345" height="225" src="';
+        echo $htmlpath;
+		echo '" alt="Parent Category: ' . $my_cat . '" alt="Toolbox Aid" >';
 
+		echo '<p>&nbsp;&nbsp;Parent Category: ';
+        echo '<a href ="/category/' . $my_cat . '">' . $my_cat .'</a>';
+        echo '</p>';
+
+		//=====================================================
+
+        if (  ! empty( $debugPath ) && $debugPath == 'true' ) {
+			echo '<p> Image Path: ';
+            echo $filepath . '</p>';
+		}
+
+		echo $args['after_widget'];
+		}
+
+    // ------------------------------------------------------------------------------------------------------------------------------------
+	// Updating widget replacing old instances with new
+	public function update( $new_instance, $old_instance ) {
+        $instance = $old_instance;
+		$instance['title']        = ( ! empty( $new_instance['title'] ) )        ? strip_tags( $new_instance['title'] )        : 'TBA';
+        $instance['defaultImage'] = ( ! empty( $new_instance['defaultImage'] ) ) ? strip_tags( $new_instance['defaultImage'] ) : 'Toolbox Aid';
+        $instance['debugPath'] = isset( $new_instance['debugPath'] ) ? $new_instance['debugPath'] : false;
+
+		return $instance;
+		}
+	 
+} // Class tba_category_image ends here
+	 
+    // ------------------------------------------------------------------------------------------------------------------------------------
+	// Register and load the widget
+	function tba_category_image_widget() {
+	    register_widget( 'tba_category_image' );
 	}
-}
 
-// Register the widget
-function register_tba_category_image_widget() {
-	register_widget( 'TBA_Category_Image_Widget' );
-}
-add_action( 'widgets_init', 'register_tba_category_image_widget' );
+	add_action( 'widgets_init', 'tba_category_image_widget' );
+
