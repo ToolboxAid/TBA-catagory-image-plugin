@@ -3,7 +3,7 @@
 Plugin Name: TBA Category Image Widget
 Plugin URI: https://toolboxaid.com/create-widget-plugin-wordpress/
 Description: This plugin adds a custom category image widget.
-Version: 1.2
+Version: 1.3
 Author: Mr Q
 Author URI: http://toolboxaid.com/
 License: GPL2
