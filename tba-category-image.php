@@ -12,7 +12,7 @@ License: GPL2
 // The widget class
 // Creating the widget
 class tba_category_image extends WP_Widget {
- 
+
 	function __construct() {
 		parent::__construct(
 	 
@@ -31,7 +31,7 @@ class tba_category_image extends WP_Widget {
        // Set widget defaults
         $defaults = array(
             'title'         => 'Toolbox Aid',
-            'defaultImage'  => 'TBA',
+            'defaultImage'  => 'TBA.png',
             'debugPath'     => true,
         );
 
@@ -41,12 +41,36 @@ class tba_category_image extends WP_Widget {
 		<?phpi // Widget Title ?>        
         <p>
             <label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php _e( 'Title', 'text_domain' ); ?></label>
-            <input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
+            <input class="input" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
         </p>
 
         <p>
             <label for="<?php echo esc_attr( $this->get_field_id( 'defaultImage' ) ); ?>"><?php _e( 'Default Image', 'text_domain' ); ?></label>
-            <input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'defaultImage' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'defaultImage' ) ); ?>" type="text" value="<?php echo esc_attr( $defaultImage ); ?>" />
+        </p>
+		<p>
+<?php 
+/*
+    $upload_dir now contains something like the following (if successful)
+    Array (
+        [path] => C:\path\to\wordpress\wp-content\uploads\2010\05
+        [url] => http://example.com/wp-content/uploads/2010/05
+        [subdir] => /2010/05
+        [basedir] => C:\path\to\wordpress\wp-content\uploads
+        [baseurl] => http://example.com/wp-content/uploads
+        [error] =>
+    )
+    // Descriptions
+    [path] - base directory and sub directory or full path to upload directory.
+    [url] - base url and sub directory or absolute URL to upload directory.
+    [subdir] - sub directory if uploads use year/month folders option is on.
+    [basedir] - path without subdir.
+    [baseurl] - URL path without subdir.
+    [error] - set to false.
+*/
+            $upload_dir = wp_upload_dir( null, false, false ); // Array of key => value pairs
+            echo 'Image directory  ' . $upload_dir['basedir'] . '/category/<br />';
+            ?>
+            <input class="input" id="<?php echo esc_attr( $this->get_field_id( 'defaultImage' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'defaultImage' ) ); ?>" type="text" value="<?php echo esc_attr( $defaultImage ); ?>" />
         </p>
 
 		<p>
@@ -54,7 +78,7 @@ class tba_category_image extends WP_Widget {
 		     <label for="<?php echo $this->get_field_id( 'debugPath' ); ?>">Show Image Path</label>
 		</p>
 
-        <?php
+		<?php
     }
 
 	// ------------------------------------------------------------------------------------------------------------------------------------	 
@@ -71,7 +95,6 @@ class tba_category_image extends WP_Widget {
 			echo $args['before_title'] . $title . $args['after_title'];
 		}
 
-		//======================================================
         $categories = get_the_category();
         $my_cat="";
         if ( (! empty( $categories )) && $categories[0]->category_parent !== null) {
@@ -86,31 +109,36 @@ class tba_category_image extends WP_Widget {
             }
         }
 
-        $htmlpath = '/wp-content/uploads/category/' . esc_html( strtolower($my_cat )) . '.png';
-        $filepath = $_SERVER['DOCUMENT_ROOT'] . $htmlpath;
+		$uploadsInfo = wp_upload_dir( null, false, false );  // don't create the yyyy/mm directory
+		$filepath = $uploadsInfo['basedir'] . '/category/';
+		$htmlpath = $uploadsInfo['baseurl'] . '/category/'; 
 
-		if ( (! empty( $categories )) && file_exists($filepath) ) {
-			// all is good
+		$showCat=false;
+
+        $imagePath = $filepath .  strtolower($my_cat ) . '.png';
+		$altText = $title ;
+		if ( file_exists($imagePath) ) { // category image found, show it
+			$htmlpath = $htmlpath .  strtolower($my_cat ) . '.png';
+			$altText = "Parent Category: " . $my_cat;
+			$showCat=true;
 		} else {
-	        if ( ! empty( $defaultImage ) ){
-				//echo '<p>' . $defaultImage . '</p>';
-	            $htmlpath = '/wp-content/uploads/category/' . $defaultImage . '.png';
-			} else {
-				$htmlpath = '/wp-content/uploads/category/TBA.png';
+	        $imagePath = $filepath .  strtolower($defaultImage);
+			if ( file_exists($imagePath) ){ // Default image found, show it
+	            $htmlpath = $htmlpath .  strtolower($defaultImage);
+			} else { // fall back to TBA image.
+	            $htmlpath = plugin_dir_path( __FILE__ ) . '/assets/TBA.png';
 			}
-
-            $filepath = $_SERVER['DOCUMENT_ROOT'] . $htmlpath;
 		}
+			
+        echo '<img width="345" height="225" src="' . $htmlpath . '" alt="' . $altText . '" >';
 
-        echo '<img width="345" height="225" src="';
-        echo $htmlpath;
-		echo '" alt="Parent Category: ' . $my_cat . '" alt="Toolbox Aid" >';
-
-		echo '<p>&nbsp;&nbsp;Parent Category: ';
-        echo '<a href ="/category/' . $my_cat . '">' . $my_cat .'</a>';
-        echo '</p>';
-
-		//=====================================================
+		if ( $showCat ) {
+			echo '<p>&nbsp;&nbsp;Parent Category: ';
+		    echo '<a href ="/category/' . $my_cat . '">' . $my_cat .'</a>';
+			echo '</p>';
+		} else {
+            echo '<p>&nbsp;</p>';
+		}
 
         if (  ! empty( $debugPath ) && $debugPath == 'true' ) {
 			echo '<p>&nbsp;&nbsp;Image Path: ';
@@ -118,15 +146,24 @@ class tba_category_image extends WP_Widget {
 		}
 
 		echo $args['after_widget'];
-		}
+	}
 
     // ------------------------------------------------------------------------------------------------------------------------------------
 	// Updating widget replacing old instances with new
 	public function update( $new_instance, $old_instance ) {
-        $instance = $old_instance;
-		$instance['title']        = ( ! empty( $new_instance['title'] ) )        ? strip_tags( $new_instance['title'] )        : 'TBA';
-        $instance['defaultImage'] = ( ! empty( $new_instance['defaultImage'] ) ) ? strip_tags( $new_instance['defaultImage'] ) : 'Toolbox Aid';
+
+		$instance = $old_instance;
+
+		$instance['title']        = ( ! empty( $new_instance['title'] ) )        ? strip_tags( $new_instance['title'] )        : 'Toolbox Aid';
+        $instance['defaultImage'] = ( ! empty( $new_instance['defaultImage'] ) ) ? strip_tags( $new_instance['defaultImage'] ) : 'TBA.png';
         $instance['debugPath'] = isset( $new_instance['debugPath'] ) ? $new_instance['debugPath'] : false;
+
+
+        $upload_dir = wp_upload_dir();
+        $catDir = $upload_dir['basedir'] . '/category/';
+		if ( ! file_exists($cayDir) ) {
+			wp_mkdir_p($catDir);
+		}
 
 		return $instance;
 		}
