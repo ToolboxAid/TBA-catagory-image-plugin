@@ -135,7 +135,7 @@ class tba_category_image extends WP_Widget {
 
         $upload_dir = wp_upload_dir();
         $catDir = $upload_dir['basedir'] . self::CATEGORY_DIR;
-		if ( ! file_exists($cayDir) ) {
+		if ( ! file_exists($catDir) ) {
 			wp_mkdir_p($catDir);
 		}
 
