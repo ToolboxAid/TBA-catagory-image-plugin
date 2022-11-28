@@ -57,6 +57,9 @@ class tba_category_image extends WP_Widget {
 			<input class="input" id="<?php echo esc_attr( $this->get_field_id( 'defaultImage' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'defaultImage' ) ); ?>" type="text" value="<?php echo esc_attr( $defaultImage ); ?>" />
 			* image should be a 'png' file </br>
 			* image name must be lowercase </br>
+			    * ie: use the slug name as image name </br>
+			    * ie: spaces in image name must be replaced with a dash '-' </br>
+			    * ie: 'my test category.png' must be saved as 'my-test-category.png' </br>
         </p>
 
 		<?php
