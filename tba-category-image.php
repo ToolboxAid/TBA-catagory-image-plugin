@@ -62,72 +62,70 @@ class tba_category_image extends WP_Widget {
 		<?php
 	}
 	
-	// ------------------------------------------------------------------------------------------------------------------------------------	 
-	// Creating widget front-end
-	public function widget( $args, $instance ) {
-		try {
-			$title        = apply_filters( 'widget_title', $instance['title'] );
-			$defaultImage = apply_filters( 'defaultImage', $instance['defaultImage'] );
-		} catch (Exception $e) {
-			$title = 'tba - change me and save me';
-			$defaultImage = "tba.png";
-		}
+    // ------------------------------------------------------------------------------------------------------------------------------------
+    // Creating widget front-end
+    public function widget( $args, $instance ) {
+        try {
+            $title        = apply_filters( 'widget_title', $instance['title'] );
+            $defaultImage = apply_filters( 'defaultImage', $instance['defaultImage'] );
+        } catch (Exception $e) {
+            $title = 'tba - change me and save me';
+            $defaultImage = "tba.png";
+        }
 
-		// before and after widget arguments are defined by themes
-		echo $args['before_widget'];
+        // before and after widget arguments are defined by themes
+        echo $args['before_widget'];
 
-		if ( ! empty( $title ) ){
-			echo $args['before_title'] . $title . $args['after_title'];
-		}
+        if ( ! empty( $title ) ){
+            echo $args['before_title'] . $title . $args['after_title'];
+        }
 
-        $categories = get_the_category();
-        $my_cat="";
-        if ( (! empty( $categories )) && $categories[0]->category_parent !== null) {
+        $category = get_the_category();
+        $category_parent_id = $category[0]->category_parent;
+        if ( $category_parent_id != 0 ) {
+            $category_parent = get_term( $category_parent_id, 'category' );
+            $my_cat_name = $category_parent->name;
+            $my_cat_slug = $category_parent->slug;
+        } else {
+            $my_cat_name = $category[0]->name;
+            $my_cat_slug = $category[0]->slug;
+        }
 
-            $parent = $categories[0]->category_parent;
+        $uploadsInfo = wp_upload_dir( null, false, false );  // don't create the yyyy/mm directory
+        $filepath = $uploadsInfo['basedir'] . self::CATEGORY_DIR;
+        $htmlpath = $uploadsInfo['baseurl'] . self::CATEGORY_DIR;
 
-            if (!empty($parent)) {
-                $my_cat=get_cat_name($parent );
-            } else {
-                $parent=$categories[0]->cat_name;
-                $my_cat=$parent;
+        $showCat=false;
+
+        $imagePath = $filepath .  strtolower($my_cat_slug ) . '.png';
+        $altText = $title ;
+        if ( file_exists($imagePath) ) { // category image found, show it
+            $htmlpath = $htmlpath .  strtolower($my_cat_slug ) . '.png';
+            $altText = "Parent Category: " . $my_cat_slug;
+            $showCat=true;
+        } else {
+            $imagePath = $filepath .  strtolower($defaultImage);
+            if ( file_exists($imagePath) ){ // Default image found, show it
+                $htmlpath = $htmlpath .  strtolower($defaultImage);
+            } else { // fall back to TBA image.
+                $htmlpath = plugin_dir_path( __FILE__ ) . '/assets/tba.png';
             }
         }
 
-		$uploadsInfo = wp_upload_dir( null, false, false );  // don't create the yyyy/mm directory
-		$filepath = $uploadsInfo['basedir'] . self::CATEGORY_DIR;
-		$htmlpath = $uploadsInfo['baseurl'] . self::CATEGORY_DIR; 
-
-		$showCat=false;
-
-        $imagePath = $filepath .  strtolower($my_cat ) . '.png';
-		$altText = $title ;
-		if ( file_exists($imagePath) ) { // category image found, show it
-			$htmlpath = $htmlpath .  strtolower($my_cat ) . '.png';
-			$altText = "Parent Category: " . $my_cat;
-			$showCat=true;
-		} else {
-	        $imagePath = $filepath .  strtolower($defaultImage);
-			if ( file_exists($imagePath) ){ // Default image found, show it
-	            $htmlpath = $htmlpath .  strtolower($defaultImage);
-			} else { // fall back to TBA image.
-	            $htmlpath = plugin_dir_path( __FILE__ ) . '/assets/tba.png';
-			}
-		}
-			
         echo '<img width="345" height="225" src="' . $htmlpath . '" alt="' . $altText . '" >';
 
-		if ( $showCat ) {
-			echo '<p>&nbsp;&nbsp;Parent Category: ';
-            #echo '<a href ="' . self::CATEGORY_DIR . $my_cat . '">' . $my_cat .'</a>';
-		    echo '<a href ="/category/' . $my_cat . '">' . $my_cat .'</a>';
-			echo '</p>';
-		} else {
+        if ( $showCat ) {
+            echo '<p>&nbsp;&nbsp;Parent Category: ';
+            #echo '<a href ="' . self::CATEGORY_DIR . $my_cat_slug . '">' . $my_cat_slug .'</a>';
+            echo '<a href ="/category/' . $my_cat_slug . '">' . $my_cat_name .'</a>';
+            echo '</p>';
+        } else {
             echo '<p>&nbsp;</p>';
-		}
+        }
 
-		echo $args['after_widget'];
-	}
+        echo $args['after_widget'];
+    }
+
 
     // ------------------------------------------------------------------------------------------------------------------------------------
 	// Updating widget replacing old instances with new
