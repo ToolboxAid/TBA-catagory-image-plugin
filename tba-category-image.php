@@ -32,14 +32,14 @@ class tba_category_image extends WP_Widget {
 
        // Set widget defaults
         $defaults = array(
-            'title'         => 'Toolbox Aid',
-			'defaultImage'  => 'tba.png',
+	    'title'         => 'Toolbox Aid',
+	    'defaultImage'  => 'tba.png',
         );
 
         // Parse current settings with defaults
         extract( wp_parse_args( ( array ) $instance, $defaults ) ); ?>
 		
-		<?php // Widget Title ?>        
+	<?php // Widget Title ?>        
 
         <p>
             <label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php _e( 'Title', 'text_domain' ); ?></label>
@@ -49,20 +49,20 @@ class tba_category_image extends WP_Widget {
         <p>
             <label for="<?php echo esc_attr( $this->get_field_id( 'defaultImage' ) ); ?>"><?php _e( 'Default Image', 'text_domain' ); ?></label>
         </p>
-		<p>
-		<?php 
-            $upload_dir = wp_upload_dir( null, false, false ); // Array of key => value pairs
-            echo 'Image directory  ' . $upload_dir['basedir'] . self::CATEGORY_DIR . '<br />';
-            ?>
-			<input class="input" id="<?php echo esc_attr( $this->get_field_id( 'defaultImage' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'defaultImage' ) ); ?>" type="text" value="<?php echo esc_attr( $defaultImage ); ?>" />
-			* image should be a 'png' file </br>
-			* image name must be lowercase </br>
-			    * ie: use the slug name as image name </br>
-			    * ie: spaces in image name must be replaced with a dash '-' </br>
-			    * ie: 'my test category.png' must be saved as 'my-test-category.png' </br>
+	<p>
+	<?php 
+	    $upload_dir = wp_upload_dir( null, false, false ); // Array of key => value pairs
+	    echo 'Image directory  ' . $upload_dir['basedir'] . self::CATEGORY_DIR . '<br />';
+	    ?>
+	    <input class="input" id="<?php echo esc_attr( $this->get_field_id( 'defaultImage' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'defaultImage' ) ); ?>" type="text" value="<?php echo esc_attr( $defaultImage ); ?>" />
+		* image should be a 'png' file </br>
+		* use slug naming convention. ie:</br>
+			- image name must be lowercase</br>
+			- spaces in image name must be replaced with a dash '-'</br>
+			- example 'my test category' must be saved as 'my-test-category.png'</br>
         </p>
 
-		<?php
+	<?php
 	}
 	
     // ------------------------------------------------------------------------------------------------------------------------------------
@@ -137,10 +137,10 @@ class tba_category_image extends WP_Widget {
 		$instance = $old_instance;
 
 		$instance['title']        = ( ! empty( $new_instance['title'] ) )        ? strip_tags( $new_instance['title'] )        : 'Toolbox Aid';
-        $instance['defaultImage'] = ( ! empty( $new_instance['defaultImage'] ) ) ? strip_tags( $new_instance['defaultImage'] ) : 'tba.png';
+        	$instance['defaultImage'] = ( ! empty( $new_instance['defaultImage'] ) ) ? strip_tags( $new_instance['defaultImage'] ) : 'tba.png';
 
-        $upload_dir = wp_upload_dir();
-        $catDir = $upload_dir['basedir'] . self::CATEGORY_DIR;
+        	$upload_dir = wp_upload_dir();
+        	$catDir = $upload_dir['basedir'] . self::CATEGORY_DIR;
 		if ( ! file_exists($catDir) ) {
 			wp_mkdir_p($catDir);
 		}
@@ -157,4 +157,3 @@ class tba_category_image extends WP_Widget {
 	}
 
 	add_action( 'widgets_init', 'tba_category_image_widget' );
-
