@@ -33,7 +33,7 @@ class tba_category_image extends WP_Widget {
        // Set widget defaults
         $defaults = array(
             'title'         => 'Toolbox Aid',
-            'defaultImage'  => 'TBA.png',
+			'defaultImage'  => 'tba.png',
         );
 
         // Parse current settings with defaults
@@ -65,9 +65,14 @@ class tba_category_image extends WP_Widget {
 	// ------------------------------------------------------------------------------------------------------------------------------------	 
 	// Creating widget front-end
 	public function widget( $args, $instance ) {
-		$title        = apply_filters( 'widget_title', $instance['title'] );
-        $defaultImage = apply_filters( 'defaultImage', $instance['defaultImage'] );
-	
+		try {
+			$title        = apply_filters( 'widget_title', $instance['title'] );
+			$defaultImage = apply_filters( 'defaultImage', $instance['defaultImage'] );
+		} catch (Exception $e) {
+			$title = 'tba - change me and save me';
+			$defaultImage = "tba.png";
+		}
+
 		// before and after widget arguments are defined by themes
 		echo $args['before_widget'];
 
@@ -106,7 +111,7 @@ class tba_category_image extends WP_Widget {
 			if ( file_exists($imagePath) ){ // Default image found, show it
 	            $htmlpath = $htmlpath .  strtolower($defaultImage);
 			} else { // fall back to TBA image.
-	            $htmlpath = plugin_dir_path( __FILE__ ) . '/assets/TBA.png';
+	            $htmlpath = plugin_dir_path( __FILE__ ) . '/assets/tba.png';
 			}
 		}
 			
@@ -131,7 +136,7 @@ class tba_category_image extends WP_Widget {
 		$instance = $old_instance;
 
 		$instance['title']        = ( ! empty( $new_instance['title'] ) )        ? strip_tags( $new_instance['title'] )        : 'Toolbox Aid';
-        $instance['defaultImage'] = ( ! empty( $new_instance['defaultImage'] ) ) ? strip_tags( $new_instance['defaultImage'] ) : 'TBA.png';
+        $instance['defaultImage'] = ( ! empty( $new_instance['defaultImage'] ) ) ? strip_tags( $new_instance['defaultImage'] ) : 'tba.png';
 
         $upload_dir = wp_upload_dir();
         $catDir = $upload_dir['basedir'] . self::CATEGORY_DIR;
