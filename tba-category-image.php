@@ -13,6 +13,8 @@ License: GPL2
 // Creating the widget
 class tba_category_image extends WP_Widget {
 
+	const CATEGORY_DIR = '/category/';
+
 	function __construct() {
 		parent::__construct(
 	 
@@ -32,13 +34,13 @@ class tba_category_image extends WP_Widget {
         $defaults = array(
             'title'         => 'Toolbox Aid',
             'defaultImage'  => 'TBA.png',
-            'debugPath'     => true,
         );
 
         // Parse current settings with defaults
         extract( wp_parse_args( ( array ) $instance, $defaults ) ); ?>
 		
-		<?phpi // Widget Title ?>        
+		<?php // Widget Title ?>        
+
         <p>
             <label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php _e( 'Title', 'text_domain' ); ?></label>
             <input class="input" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
@@ -48,45 +50,23 @@ class tba_category_image extends WP_Widget {
             <label for="<?php echo esc_attr( $this->get_field_id( 'defaultImage' ) ); ?>"><?php _e( 'Default Image', 'text_domain' ); ?></label>
         </p>
 		<p>
-<?php 
-/*
-    $upload_dir now contains something like the following (if successful)
-    Array (
-        [path] => C:\path\to\wordpress\wp-content\uploads\2010\05
-        [url] => http://example.com/wp-content/uploads/2010/05
-        [subdir] => /2010/05
-        [basedir] => C:\path\to\wordpress\wp-content\uploads
-        [baseurl] => http://example.com/wp-content/uploads
-        [error] =>
-    )
-    // Descriptions
-    [path] - base directory and sub directory or full path to upload directory.
-    [url] - base url and sub directory or absolute URL to upload directory.
-    [subdir] - sub directory if uploads use year/month folders option is on.
-    [basedir] - path without subdir.
-    [baseurl] - URL path without subdir.
-    [error] - set to false.
-*/
+		<?php 
             $upload_dir = wp_upload_dir( null, false, false ); // Array of key => value pairs
-            echo 'Image directory  ' . $upload_dir['basedir'] . '/category/<br />';
+            echo 'Image directory  ' . $upload_dir['basedir'] . self::CATEGORY_DIR . '<br />';
             ?>
-            <input class="input" id="<?php echo esc_attr( $this->get_field_id( 'defaultImage' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'defaultImage' ) ); ?>" type="text" value="<?php echo esc_attr( $defaultImage ); ?>" />
+			<input class="input" id="<?php echo esc_attr( $this->get_field_id( 'defaultImage' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'defaultImage' ) ); ?>" type="text" value="<?php echo esc_attr( $defaultImage ); ?>" />
+			* image should be a 'png' file </br>
+			* image name must be lowercase </br>
         </p>
 
-		<p>
-			 <input class="checkbox" type="checkbox" <?php checked( $instance[ 'debugPath' ], 'on' ); ?> id="<?php echo $this->get_field_id( 'debugPath' ); ?>" name="<?php echo $this->get_field_name( 'debugPath' ); ?>" /> 
-		     <label for="<?php echo $this->get_field_id( 'debugPath' ); ?>">Show Image Path</label>
-		</p>
-
 		<?php
-    }
-
+	}
+	
 	// ------------------------------------------------------------------------------------------------------------------------------------	 
 	// Creating widget front-end
 	public function widget( $args, $instance ) {
 		$title        = apply_filters( 'widget_title', $instance['title'] );
         $defaultImage = apply_filters( 'defaultImage', $instance['defaultImage'] );
-		$debugPath    = $instance[ 'debugPath' ] ? 'true' : 'false';
 	
 		// before and after widget arguments are defined by themes
 		echo $args['before_widget'];
@@ -110,8 +90,8 @@ class tba_category_image extends WP_Widget {
         }
 
 		$uploadsInfo = wp_upload_dir( null, false, false );  // don't create the yyyy/mm directory
-		$filepath = $uploadsInfo['basedir'] . '/category/';
-		$htmlpath = $uploadsInfo['baseurl'] . '/category/'; 
+		$filepath = $uploadsInfo['basedir'] . self::CATEGORY_DIR;
+		$htmlpath = $uploadsInfo['baseurl'] . self::CATEGORY_DIR; 
 
 		$showCat=false;
 
@@ -134,15 +114,11 @@ class tba_category_image extends WP_Widget {
 
 		if ( $showCat ) {
 			echo '<p>&nbsp;&nbsp;Parent Category: ';
+            #echo '<a href ="' . self::CATEGORY_DIR . $my_cat . '">' . $my_cat .'</a>';
 		    echo '<a href ="/category/' . $my_cat . '">' . $my_cat .'</a>';
 			echo '</p>';
 		} else {
             echo '<p>&nbsp;</p>';
-		}
-
-        if (  ! empty( $debugPath ) && $debugPath == 'true' ) {
-			echo '<p>&nbsp;&nbsp;Image Path: ';
-            echo $filepath . '</p>';
 		}
 
 		echo $args['after_widget'];
@@ -156,17 +132,15 @@ class tba_category_image extends WP_Widget {
 
 		$instance['title']        = ( ! empty( $new_instance['title'] ) )        ? strip_tags( $new_instance['title'] )        : 'Toolbox Aid';
         $instance['defaultImage'] = ( ! empty( $new_instance['defaultImage'] ) ) ? strip_tags( $new_instance['defaultImage'] ) : 'TBA.png';
-        $instance['debugPath'] = isset( $new_instance['debugPath'] ) ? $new_instance['debugPath'] : false;
-
 
         $upload_dir = wp_upload_dir();
-        $catDir = $upload_dir['basedir'] . '/category/';
+        $catDir = $upload_dir['basedir'] . self::CATEGORY_DIR;
 		if ( ! file_exists($cayDir) ) {
 			wp_mkdir_p($catDir);
 		}
 
 		return $instance;
-		}
+	}	
 	 
 } // Class tba_category_image ends here
 	 
