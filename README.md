@@ -35,7 +35,10 @@ e.g.
 
 == Changelog ==
 
-= 0.1 = 2022/11/23
+= 1.3 = 2022/11/28
+* Rewrite entire plug-in
+
+= 1.0 = 2022/11/23
 * Birth of the plugin.
 
 == Upgrade Notice ==
