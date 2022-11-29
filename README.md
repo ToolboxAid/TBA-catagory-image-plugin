@@ -1,5 +1,5 @@
 # Wordpress-Plugins
-Plug-ins written by TBA for sites we support
+This Wordpress plug-in is written by TBA for sites we support.
 
 === TBA Category Image ===
 - Contributors: Mr. Q
